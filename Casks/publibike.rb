@@ -12,14 +12,16 @@ cask "publibike" do
     strategy :github_latest
   end
 
-  depends_on macos: ">= :sonoma"
+  depends_on macos: :sonoma
 
   app "PubliBike.app"
 
   # Not signed with an Apple Developer ID: drop the download quarantine so Gatekeeper doesn't block it.
-  postflight do
-    system_command "/usr/bin/xattr",
-                   args: ["-dr", "com.apple.quarantine", "#{appdir}/PubliBike.app"]
+  postflight_steps do
+    run "/usr/bin/xattr",
+        args:           ["-dr", "com.apple.quarantine", "{{appdir}}/PubliBike.app"],
+        writable_paths: ["PubliBike.app"],
+        writable_base:  :appdir
   end
 
   uninstall quit: "local.publibike.bar"
